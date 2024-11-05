@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Debay</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #fff;
+        }
+        .cart-item {
+            background-color: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .btn-green {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .btn-green:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <h2>Your Cart</h2>
+    <div id="cartContainer">
+        <div th:if="${cartItems.isEmpty()}" class="text-center">
+            <p>Your cart is empty.</p>
+        </div>
+
+        <div th:each="cartItem : ${cartItems}" class="cart-item">
+            <h5 th:text="${cartItem.product.name}">Product Name</h5>
+            <p th:text="'Quantity: ' + ${cartItem.quantity}">Quantity: </p>
+            <p th:text="'Price: $' + ${cartItem.product.price * cartItem.quantity}">Price: </p>
+            <form th:action="@{/cart/remove/{cartItemId}(cartItemId=${cartItem.id})}" method="post">
+                <button type="submit" class="btn btn-danger">Remove</button>
+            </form>
+        </div>
+    </div>
+    <form action="#" th:action="@{/buy-all}" method="post">
+        <button type="submit" class="btn btn-green btn-block mt-3">Buy All</button>
+    </form>
+    <button onclick="goBackToProducts()" class="btn btn-secondary btn-block mt-3">Back to Products</button>
+</div>
+
+<script>
+  // Function to go back to the products page and refresh
+  function goBackToProducts() {
+    // Redirect to products page and reload it
+    window.location.href = '/api/products/home';
+  }
+
+  // Listen for the back button using the popstate event to refresh the products page
+  window.addEventListener("popstate", function (event) {
+    if (event.state === null) {
+      window.location.href = '/api/products/home';
+    }
+  });
+</script>
+</body>
+</html>

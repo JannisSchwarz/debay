@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products - Debay</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #0a0a0a;
+      color: #fff;
+    }
+    .product-card {
+      background-color: #1a1a1a;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    .btn-green {
+      background-color: #28a745;
+      color: #fff;
+    }
+    .btn-green:hover {
+      background-color: #218838;
+    }
+    .cart-summary {
+      color: #fff;
+      padding: 10px;
+      background-color: #333;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+<div th:replace="header :: topbar"></div>
+<div class="container mt-4">
+  <h2>Products</h2>
+  <div id="productContainer" class="row">
+    <div th:each="product : ${products}" class="col-md-4">
+      <div class="product-card">
+        <img th:src="@{/productsimages/{imageName}(imageName=${product.imageUrl})}" alt="Product Image" class="img-fluid">
+        <h5 th:text="${product.name}"></h5>
+        <p th:text="${product.description}"></p>
+        <p th:text="'Price: $' + ${product.price}"></p>
+        <p>Quantity left: <span th:text="${product.quantity}"></span></p>
+        <div th:if="${product.quantity <= 0}" class="text-danger">Sold Out</div>
+        <form th:action="@{/api/products/add-to-cart/{productId}(productId=${product.id})}" method="post" th:if="${product.quantity > 0}">
+          <button type="submit" class="btn btn-green">Add to Cart</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function viewCart() {
+    window.location.href = '/cart';
+  }
+</script>
+</body>
+</html>

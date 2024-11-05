@@ -1,15 +1,14 @@
+# Use an official OpenJDK runtime as a parent image
+FROM openjdk:17-jdk-slim
 
-FROM amazoncorretto:17
+# Set the working directory in the container
+WORKDIR /app
 
-# the JAR file path
-ARG JAR_FILE=target/*.jar
+# Copy the application JAR file
+COPY target/debay-0.0.1-SNAPSHOT.jar app.jar
 
-# Copy the JAR file from the build context into the Docker image
-COPY ${JAR_FILE} application.jar
+# Expose the application's port (this should match the port your application listens on)
+EXPOSE 8080
 
-COPY src/main/resources/templates /templates/
-
-CMD apt-get update -y
-
-# Set the default command to run the Java application
-ENTRYPOINT ["java", "-Xmx2048M", "-jar", "/application.jar"]
+# Run the Spring Boot application
+ENTRYPOINT ["java", "-jar", "app.jar"]

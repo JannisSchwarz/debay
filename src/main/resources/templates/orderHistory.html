@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History - Debay</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #fff;
+        }
+        .order-item {
+            background-color: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <h2>Your Order History</h2>
+    <div th:if="${orderHistories.isEmpty()}" class="text-center">
+        <p>No orders found.</p>
+    </div>
+
+    <div th:each="order, iterStat : ${orderHistories}">
+        <h5 th:text="'Product: ' + ${order.product.name}"></h5>
+        <p th:text="'Quantity: ' + ${order.quantity}"></p>
+        <p th:text="'Price: $' + ${order.product.price}"></p>
+        <p th:text="'Purchase Date: ' + ${formattedDates[iterStat.index]}"></p>
+    </div>
+
+    <button onclick="goBackToProducts()" class="btn btn-secondary mt-3">Back to Products</button>
+</div>
+
+<script>
+  function goBackToProducts() {
+    window.location.href = '/api/products/home';
+  }
+</script>
+</body>
+</html>
