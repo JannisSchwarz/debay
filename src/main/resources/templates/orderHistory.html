@@ -12,26 +12,38 @@
         }
         .order-item {
             background-color: #1a1a1a;
-            padding: 15px;
+            padding: 20px;
             border-radius: 8px;
+            border: 1px solid #333;
             margin-bottom: 20px;
+        }
+        .order-title {
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
+<div th:replace="header :: topbar"></div>
 <div class="container mt-4">
     <h2>Your Order History</h2>
+
+    <!-- Message if there are no orders -->
     <div th:if="${orderHistories.isEmpty()}" class="text-center">
         <p>No orders found.</p>
     </div>
 
-    <div th:each="order, iterStat : ${orderHistories}">
+    <!-- Loop through each order history -->
+    <div th:each="order, iterStat : ${orderHistories}" class="order-item">
+        <div class="order-title">Order # <span th:text="${iterStat.count}"></span></div>
         <h5 th:text="'Product: ' + ${order.product.name}"></h5>
         <p th:text="'Quantity: ' + ${order.quantity}"></p>
         <p th:text="'Price: $' + ${order.product.price}"></p>
         <p th:text="'Purchase Date: ' + ${formattedDates[iterStat.index]}"></p>
     </div>
 
+    <!-- Button to go back to products -->
     <button onclick="goBackToProducts()" class="btn btn-secondary mt-3">Back to Products</button>
 </div>
 

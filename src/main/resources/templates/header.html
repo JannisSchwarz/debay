@@ -4,7 +4,10 @@
 <div th:fragment="topbar">
     <nav class="navbar d-flex justify-content-between align-items-center" style="background-color: #28a745; padding: 10px;">
         <div class="logo">
-            <img src="/logo/logo.jpg" alt="Debay Logo" class="img-fluid" style="max-width: 400px; max-height: 40px; object-fit: contain;">
+            <!-- Wrap the image in an anchor tag to make it clickable -->
+            <a href="/api/products/home">
+                <img src="/logo/logo.jpg" alt="Debay Logo" class="img-fluid" style="max-width: 400px; max-height: 40px; object-fit: contain;">
+            </a>
         </div>
         <div>
             <a href="/cart" class="btn btn-dark nav-item">Cart</a>

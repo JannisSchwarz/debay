@@ -1,5 +1,6 @@
 package azubi.debay.controller;
 
+import azubi.debay.AuthService;
 import azubi.debay.entity.CartItem;
 import azubi.debay.entity.OrderHistory;
 import azubi.debay.entity.Product;
@@ -32,15 +33,13 @@ public class CartController {
     private ProductRepository productRepository;
     @Autowired
     private OrderHistoryRepository orderHistoryRepository;
+
+    private final AuthService authorizer = new AuthService();
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @GetMapping("/cart")
     public String viewCart(Model model, HttpSession session) {
-        logger.info("user" + session.getAttribute("user"));
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/";
-        }
+        User user = authorizer.checkLoggedIn(session);
         List<CartItem> cartItems = cartItemRepository.findByUser(user)
                 .stream()
                 .sorted(Comparator.comparing(cartItem -> cartItem.getProduct().getId()))
@@ -51,10 +50,7 @@ public class CartController {
 
     @PostMapping("/cart/remove/{cartItemId}")
     public String removeCartItem(@PathVariable Long cartItemId, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/";
-        }
+        authorizer.checkLoggedIn(session);
 
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new RuntimeException("Cart item not found"));
@@ -77,35 +73,28 @@ public class CartController {
     @Transactional
     @PostMapping("/buy-all")
     public String buyAll(HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            logger.error("User not found in the session. Redirecting to login page.");
-            return "redirect:/"; // Redirect to login if user is not in session
-        }
+        User user = authorizer.checkLoggedIn(session);
 
         List<CartItem> cartItems = cartItemRepository.findByUser(user);
         if (cartItems.isEmpty()) {
             logger.info("Cart is empty. No items to purchase.");
-            return "redirect:/api/products/home"; // Redirect to home if cart is empty
+            return "redirect:/api/products/home";
         }
 
         for (CartItem cartItem : cartItems) {
-            // Create and save order history for each cart item
             OrderHistory orderHistory = new OrderHistory();
             orderHistory.setUser(user);
             orderHistory.setProduct(cartItem.getProduct());
             orderHistory.setQuantity(cartItem.getQuantity());
             orderHistory.setPurchaseDate(LocalDateTime.now());
-            // Save the order history
             orderHistoryRepository.save(orderHistory);
 
         }
 
-        // Remove all items from the cart
         cartItemRepository.deleteAll(cartItems);
 
         logger.info("All items purchased and removed from cart.");
 
-        return "redirect:/api/products/home"; // Redirect to products page after purchase
+        return "redirect:/api/products/home";
     }
 }

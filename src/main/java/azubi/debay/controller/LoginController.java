@@ -4,8 +4,6 @@ import azubi.debay.entity.User;
 import azubi.debay.repository.ProductRepository;
 import azubi.debay.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +18,6 @@ import java.util.Optional;
 
 @Controller
 public class LoginController {
-    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
@@ -71,7 +68,7 @@ public class LoginController {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if (passwordEncoder.matches(password, user.getPassword())) {
-                session.setAttribute("user", user); // Store user in session
+                session.setAttribute("user", user);
                 model.addAttribute("message", "Login successful!");
                 return "redirect:/home";
             }
@@ -86,9 +83,9 @@ public class LoginController {
         User loggedInUser = (User) session.getAttribute("user");
         if (loggedInUser != null) {
             List<Product> products = productRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
-            model.addAttribute("products", products); // Pass products to the model
+            model.addAttribute("products", products);
             model.addAttribute("message", "Welcome to Debay Online Shop!");
-            model.addAttribute("username", loggedInUser.getUsername()); // Pass username to model
+            model.addAttribute("username", loggedInUser.getUsername());
             return "products";
         }
         return "redirect:/";

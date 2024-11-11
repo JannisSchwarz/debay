@@ -1,12 +1,10 @@
 package azubi.debay.controller;
 
+import azubi.debay.AuthService;
 import azubi.debay.entity.OrderHistory;
 import azubi.debay.entity.User;
 import azubi.debay.repository.OrderHistoryRepository;
-import azubi.debay.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,17 +20,13 @@ import java.util.stream.Collectors;
 public class OrderHistoryController {
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private OrderHistoryRepository orderHistoryRepository;
+
+    private final AuthService authorizer = new AuthService();
 
     @GetMapping("/history")
     public String getOrderHistory(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/"; // Redirect to login if user is not in session
-        }
+        User user = authorizer.checkLoggedIn(session);
 
         List<OrderHistory> orderHistories = orderHistoryRepository.findByUser(user);
 
@@ -42,8 +36,8 @@ public class OrderHistoryController {
                 .collect(Collectors.toList());
 
         model.addAttribute("orderHistories", orderHistories);
-        model.addAttribute("formattedDates", formattedDates); // Add formatted dates to the model
+        model.addAttribute("formattedDates", formattedDates);
 
-        return "orderHistory"; // Return the name of the HTML template to render
+        return "orderHistory";
     }
 }
